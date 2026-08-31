@@ -24,6 +24,7 @@ def print_campaign_summary(result: dict[str, object]) -> None:
             "本次写入 AI 文案": generation["written"],
             "AI 失败，暂时跳过": result.get("skipped_generation_failed", 0),
             "缺少正文，暂时跳过": result.get("skipped_missing_content", 0),
+            "印度达人暂不发": result.get("country_holds_applied", 0),
             "此前已绑定": assignment["already_assigned_to_sender"],
             "本次新绑定": assignment["assigned_now"],
             "待发送": dry_run["selected"],
@@ -61,6 +62,7 @@ def print_stats(result: dict[str, object]) -> None:
         ("其中：SMTP 永久失败", "hard_failed"),
         ("SMTP 临时失败，可重试", "temporary_failed"),
         ("尚未发送且允许发送", "pending_sendable"),
+        ("暂不发送（印度）", "on_hold"),
         ("正在发送", "sending"),
     )
     for label, key in labels:
@@ -194,6 +196,11 @@ def _print_engagement_summary(
         "仍可发送但尚未完成",
         delivery["pending_sendable"],
         _percentage_for_ui(delivery["pending_sendable"], started_contacts),
+    )
+    add(
+        "暂不发送（印度）",
+        delivery["on_hold"],
+        _percentage_for_ui(delivery["on_hold"], started_contacts),
     )
     add(
         "SMTP 临时失败",

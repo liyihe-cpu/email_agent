@@ -13,7 +13,7 @@ import smtplib
 import time
 from uuid import uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from ..core.config import PROJECT_ROOT, Settings, get_settings
@@ -24,6 +24,9 @@ from ..core.utils import extract_send_address, normalize_email_key
 
 ELIGIBLE_SEND_STATUSES = ("pending", "temporary_failed")
 BLOCKED_EMAIL_STATUSES = ("invalid", "suppressed")
+ON_HOLD_SEND_STATUS = "on_hold"
+COUNTRY_HOLD_REASON = "country_hold_india"
+COUNTRY_HOLD_VALUES = ("india", "ind", "in", "republic of india", "印度")
 EMAIL_LOGO_PATH = PROJECT_ROOT / "frontend" / "creator_pass" / "assets" / "coojoy-logo.jpg"
 URL_PATTERN = re.compile(r"https://[^\s<>]+")
 
@@ -180,6 +183,7 @@ def send_batch(
     execute: bool = False,
 ) -> dict[str, int]:
     """Inspect or send one explicit batch using the shared accounts file."""
+    apply_country_holds(batch_no=batch_no)
     _validate_execution_guard(execute=execute)
     if execute and not sender_email:
         raise ValueError("--sender-email is required when send-batch uses --execute")
@@ -214,6 +218,27 @@ def send_batch(
         execute=execute,
         expected_sender=sender if execute else None,
     )
+
+
+def apply_country_holds(*, batch_no: int | None = None) -> int:
+    """Move currently sendable contacts in paused countries to an explicit hold state."""
+    filters = [
+        ActivityContact.send_status.in_(ELIGIBLE_SEND_STATUSES),
+        func.lower(func.trim(ActivityContact.country)).in_(COUNTRY_HOLD_VALUES),
+    ]
+    if batch_no is not None:
+        filters.append(ActivityContact.batch_no == batch_no)
+
+    with session_scope() as session:
+        result = session.execute(
+            update(ActivityContact)
+            .where(*filters)
+            .values(
+                send_status=ON_HOLD_SEND_STATUS,
+                status_reason=COUNTRY_HOLD_REASON,
+            )
+        )
+        return int(result.rowcount or 0)
 
 
 def _send_emails(

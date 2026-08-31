@@ -15,6 +15,13 @@ STRATEGY_FILTERS = {
     "s3": ActivityContact.batch_no.between(51, 75),
 }
 
+STARTED_SEND_STATUSES = (
+    "sending",
+    "smtp_accepted",
+    "temporary_failed",
+    "hard_failed",
+)
+
 
 def collect_stats(
     batch_no: int | None = None,
@@ -332,7 +339,7 @@ def _collect_started_batch_progress(
 ) -> dict[str, object]:
     started_batch_statement = (
         select(ActivityContact.batch_no)
-        .where(ActivityContact.send_status != "pending")
+        .where(ActivityContact.send_status.in_(STARTED_SEND_STATUSES))
         .distinct()
         .order_by(ActivityContact.batch_no)
     )
@@ -355,6 +362,7 @@ def _collect_started_batch_progress(
             "temporary_failed": 0,
             "hard_failed": 0,
             "sending": 0,
+            "on_hold": 0,
         }
 
     started_scope = ActivityContact.batch_no.in_(started_batches)
@@ -388,6 +396,9 @@ def _collect_started_batch_progress(
         func.count()
         .filter(ActivityContact.send_status == "sending")
         .label("sending"),
+        func.count()
+        .filter(ActivityContact.send_status == "on_hold")
+        .label("on_hold"),
     ).where(started_scope)
     if contact_filter is not None:
         statement = statement.where(contact_filter)
@@ -420,6 +431,7 @@ def _collect_started_batch_progress(
         "temporary_failed": values["temporary_failed"],
         "hard_failed": values["hard_failed"],
         "sending": values["sending"],
+        "on_hold": values["on_hold"],
     }
 
 
@@ -460,4 +472,5 @@ def _summarize_delivery(
         "temporary_failed": count_where(send="temporary_failed"),
         "pending_sendable": pending_sendable,
         "sending": count_where(send="sending"),
+        "on_hold": count_where(send="on_hold"),
     }

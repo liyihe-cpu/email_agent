@@ -4,7 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .scheduler import assign_batch_to_sender
-from .sender import send_batch
+from .sender import apply_country_holds, send_batch
 from .strategies.s1_direct_pitch import (
     S1_CONTINUATION_FIRST_BATCH,
     S1_FIRST_BATCH,
@@ -98,6 +98,8 @@ def prepare_campaign(
             f"batch {batch_no} is outside that range."
         )
 
+    country_holds_applied = apply_country_holds(batch_no=batch_no)
+
     _stage(on_stage, "validate", "start")
     validation = validate_pending_contacts(
         batch_no=batch_no,
@@ -153,6 +155,7 @@ def prepare_campaign(
         "generation": generation,
         "assignment": assignment,
         "dry_run": dry_run,
+        "country_holds_applied": country_holds_applied,
         "skipped_generation_failed": int(generation["failed"]),
         "skipped_missing_content": int(assignment["missing_content"]),
     }

@@ -15,6 +15,7 @@ from .campaign import get_strategy_route, prepare_campaign, send_prepared_campai
 from .sender import (
     BLOCKED_EMAIL_STATUSES,
     ELIGIBLE_SEND_STATUSES,
+    apply_country_holds,
     load_smtp_accounts,
     validate_smtp_account,
 )
@@ -138,6 +139,7 @@ def _run_locked_plan(
     # Phase one is intentionally sequential: all batches must pass preparation
     # before the first external email is sent.
     for job in jobs:
+        apply_country_holds(batch_no=job.batch_no)
         state = _batch_state(job.batch_no)
         if state["total"] == 0:
             raise RuntimeError(f"Batch {job.batch_no} does not exist")

@@ -195,6 +195,9 @@ def collect_queue_state(jobs: list[CampaignJob]) -> dict[str, int]:
                 .filter(ActivityContact.send_status == "pending")
                 .label("pending"),
                 func.count()
+                .filter(ActivityContact.send_status == "on_hold")
+                .label("on_hold"),
+                func.count()
                 .filter(
                     ActivityContact.send_status == "sending"
                 )

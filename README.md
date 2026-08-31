@@ -518,6 +518,7 @@ Andy 多轮回复覆盖。
 | 值 | 含义 | 自动重试 |
 |---|---|---|
 | `pending` | 尚未发送 | 是 |
+| `on_hold` | 暂不发送；目前用于印度达人 | 否，解除暂缓后再恢复为 pending |
 | `sending` | 已领取发送任务，或结果待确认 | 否，先看原因 |
 | `smtp_accepted` | SMTP 服务端已接受 | 否 |
 | `temporary_failed` | 4xx 或明确临时失败 | 是 |
