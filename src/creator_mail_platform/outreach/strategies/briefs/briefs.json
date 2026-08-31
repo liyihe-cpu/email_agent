@@ -1,0 +1,202 @@
+[
+  {
+    "brief_code": "BEAUTY-01",
+    "enabled": true,
+    "name": "Confidential Global Beauty Campaign",
+    "short_name": "Global Beauty",
+    "brand_alias": "well-known beauty brand",
+    "primary_category": "Beauty & Personal Care",
+    "categories": ["Beauty & Personal Care", "Fashion", "Lifestyle"],
+    "regions": ["Global"],
+    "match_guidance": "Beauty, makeup, haircare, fashion, and lifestyle creators who naturally feature products on camera.",
+    "subjects": [
+      "Paid beauty collaboration for {handle} · US$1,000–2,000 + products",
+      "{handle}, interested in an upcoming beauty campaign?"
+    ],
+    "product_name": "Beauty products such as blush, foundation, and styling tools, matched to the creator's content",
+    "deliverables": "1 vertical video, 40–60 seconds, published on the creator's account",
+    "compact_requirement": "1 vertical video, 40–60 sec",
+    "usage_rights": "30 days",
+    "compensation": "US$1,000–2,000 + US$300 in free products",
+    "timeline": "Within one month after confirmation"
+  },
+  {
+    "brief_code": "MIC-01",
+    "enabled": true,
+    "name": "Confidential Microphone Campaign",
+    "short_name": "Creator Microphone",
+    "brand_alias": "well-known microphone brand",
+    "primary_category": "Technology & Electronics",
+    "categories": ["Consumer Electronics", "Music & Audio", "Gaming", "Lifestyle", "Education"],
+    "regions": ["Global"],
+    "match_guidance": "Creators whose videos rely on speaking, interviews, tutorials, streaming, music, or polished on-camera audio.",
+    "subjects": [
+      "Paid creator microphone campaign for {handle}",
+      "{handle}, a paid audio collaboration opportunity"
+    ],
+    "product_name": "Professional creator microphone",
+    "deliverables": "1 vertical video, 40–60 seconds, published on the creator's account",
+    "compact_requirement": "1 vertical video, 40–60 sec",
+    "usage_rights": "30 days",
+    "compensation": "US$1,000–2,000 + a microphone valued at approximately US$400",
+    "timeline": "Within one month after confirmation"
+  },
+  {
+    "brief_code": "ECOM-01",
+    "enabled": true,
+    "name": "Global E-commerce App Campaign",
+    "short_name": "E-commerce App",
+    "brand_alias": "world-known e-commerce platform",
+    "primary_category": "Home & Lifestyle",
+    "categories": ["Lifestyle", "Fashion", "Beauty & Personal Care", "Home & Lifestyle", "Consumer Electronics", "Food & Local Experiences"],
+    "regions": ["Global"],
+    "match_guidance": "TikTok creators who can naturally demonstrate shopping value, product variety, affordability, or app convenience.",
+    "subjects": [
+      "Paid TikTok collaboration for {handle} · US$1,500–2,000",
+      "{handle}, interested in an upcoming shopping app campaign?"
+    ],
+    "product_name": "Global e-commerce shopping app",
+    "deliverables": "1 TikTok video, 30–60 seconds, published on the creator's account",
+    "compact_requirement": "TikTok required; 1 video, 30–60 sec",
+    "usage_rights": "90 days",
+    "compensation": "US$1,500–2,000; no physical sample",
+    "timeline": "First draft within 5 days after contract signing"
+  },
+  {
+    "brief_code": "BABY-01",
+    "enabled": true,
+    "name": "Confidential Babycare Diaper Campaign",
+    "short_name": "Babycare",
+    "brand_alias": "well-known babycare brand",
+    "primary_category": "Parenting & Family",
+    "categories": ["Parenting & Family", "Lifestyle"],
+    "regions": ["Global"],
+    "match_guidance": "Parenting, babycare, family lifestyle, and household creators who can demonstrate diapers naturally.",
+    "subjects": [
+      "Paid babycare collaboration for {handle} · US$1,700–2,200",
+      "{handle}, an upcoming paid babycare campaign"
+    ],
+    "product_name": "Babycare diaper",
+    "product_links": ["https://www.bcbabycare.com/products/cloud-skin-diaper"],
+    "deliverables": "1 Reel, 40–60 seconds",
+    "compact_requirement": "Parenting creators; 1 Reel, 40–60 sec",
+    "usage_rights": "30-day ad code",
+    "compensation": "US$1,700–2,200 + product provided",
+    "timeline": "To be confirmed with the creator"
+  },
+  {
+    "brief_code": "GAME-01",
+    "enabled": false,
+    "disabled_reason": "The source deadline is 9.5 without a confirmed year. Confirm the new schedule before enabling.",
+    "name": "World-renowned RPG Materials Campaign",
+    "short_name": "Global RPG",
+    "brand_alias": "world-renowned RPG",
+    "primary_category": "Gaming & Apps",
+    "categories": ["Gaming", "Entertainment"],
+    "regions": ["Global"],
+    "match_guidance": "RPG, gaming news, game commentary, character analysis, and game-focused UGC creators.",
+    "subjects": [
+      "Paid RPG content opportunity for {handle}",
+      "{handle}, interested in an upcoming gaming campaign?"
+    ],
+    "product_name": "Confidential world-renowned RPG",
+    "deliverables": "1 video delivered in 9:16, 16:9, and 1:1 formats; no channel posting required",
+    "compact_requirement": "Video materials in 3 formats; no posting",
+    "usage_rights": "Video materials delivery; detailed usage to be confirmed",
+    "compensation": "US$1,000",
+    "timeline": "New schedule must be confirmed before launch"
+  },
+  {
+    "brief_code": "AI-01",
+    "enabled": true,
+    "name": "Confidential AI Productivity Tool Campaign",
+    "short_name": "AI Productivity Tool",
+    "brand_alias": "fast-growing AI productivity platform",
+    "primary_category": "AI",
+    "categories": [
+      "AI",
+      "Technology & Electronics",
+      "Education, Business & Finance",
+      "Entertainment, Music & Arts"
+    ],
+    "regions": ["United States"],
+    "platforms": ["YouTube"],
+    "match_guidance": "US-based English-speaking YouTube creators covering AI tools, productivity workflows, software reviews, creator education, AI-assisted content production, animation, illustration, podcasting, audiobooks, voice-over, or audio production.",
+    "subjects": [
+      "Paid AI tool collaboration for {handle} · up to US$2,500",
+      "{handle}, interested in an upcoming AI productivity campaign?"
+    ],
+    "product_name": "Confidential AI productivity and creator workflow tool",
+    "deliverables": "YouTube content format to be confirmed after creator fit, rate, and availability review",
+    "compact_requirement": "US YouTube creators; format to be confirmed",
+    "usage_rights": "To be confirmed with shortlisted creators",
+    "compensation": "Up to US$2,500",
+    "timeline": "Upcoming campaign; exact schedule to be confirmed",
+    "creator_openings": 10,
+    "confidentiality_note": "Full brand information is shared after initial interest and fit confirmation"
+  },
+  {
+    "brief_code": "CAM-01",
+    "enabled": true,
+    "is_fallback": true,
+    "name": "Confidential Portable Camera Campaign",
+    "short_name": "Portable Camera",
+    "brand_alias": "well-known portable camera brand",
+    "primary_category": "Technology & Electronics",
+    "categories": ["Lifestyle", "Consumer Electronics", "Outdoor & Sports", "Travel", "Photography"],
+    "regions": ["Global"],
+    "match_guidance": "Creators with strong visual storytelling, everyday documentation, travel, outdoor, photography, or video production content.",
+    "subjects": [
+      "Paid camera collaboration for {handle} · US$800",
+      "{handle}, a portable camera campaign opportunity"
+    ],
+    "product_name": "Portable camera selected to match the creator's content style",
+    "deliverables": "1 vertical video, 40–60 seconds, posted on TikTok or Instagram",
+    "compact_requirement": "TikTok or Instagram; 1 video, 40–60 sec",
+    "usage_rights": "Ad code, bio link, and other usage terms to be confirmed with the brand",
+    "compensation": "US$800",
+    "timeline": "Within two weeks after confirmation"
+  },
+  {
+    "brief_code": "OUTDOOR-01",
+    "enabled": true,
+    "name": "US Outdoor Canopy Campaign",
+    "short_name": "Outdoor Canopy",
+    "brand_alias": "world-known US outdoor brand",
+    "primary_category": "Sports & Outdoor",
+    "categories": ["Outdoor & Sports", "Home & Lifestyle", "Food & Local Experiences", "Parenting & Family"],
+    "regions": ["United States"],
+    "match_guidance": "Outdoor, camping, market vendor, handmade business, family gathering, community event, and practical gear creators in the US.",
+    "subjects": [
+      "Paid outdoor collaboration for {handle} · US$1,500 + product",
+      "{handle}, interested in a US outdoor brand campaign?"
+    ],
+    "product_name": "Quick tool-free, anti-UV and waterproof outdoor canopy",
+    "deliverables": "1 video with a 1+ minute integrated product feature",
+    "compact_requirement": "US only; 1 integrated video, 1+ min",
+    "usage_rights": "30-day secondary editing and recreation",
+    "compensation": "US$1,500 + free product",
+    "timeline": "Within two weeks after confirmation"
+  },
+  {
+    "brief_code": "FASHION-01",
+    "enabled": true,
+    "name": "Confidential Women's Fashion Fall Campaign",
+    "short_name": "Women's Fashion",
+    "brand_alias": "renowned women's fashion brand",
+    "primary_category": "Fashion",
+    "categories": ["Fashion", "Beauty & Personal Care", "Lifestyle"],
+    "regions": ["Global"],
+    "match_guidance": "Women's fashion, styling, outfit, beauty, and lifestyle creators with a strong personal aesthetic.",
+    "subjects": [
+      "Paid fashion collaboration for {handle} · US$1,500 + products",
+      "{handle}, an upcoming women's fashion campaign"
+    ],
+    "product_name": "5–7 new women's apparel pieces for a Fall campaign",
+    "deliverables": "1 vertical TikTok video, 40–60 seconds",
+    "compact_requirement": "TikTok required; 1 video, 40–60 sec",
+    "usage_rights": "90-day ad code authorization",
+    "compensation": "US$1,500 + free products",
+    "timeline": "Within two weeks after confirmation"
+  }
+]
