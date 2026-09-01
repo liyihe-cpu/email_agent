@@ -4,7 +4,7 @@ from copy import deepcopy
 import json
 from typing import Any
 
-from sqlalchemy import cast, func, select
+from sqlalchemy import cast, func, or_, select
 from sqlalchemy.dialects.postgresql import JSONPATH
 
 from ..core.config import get_settings
@@ -198,6 +198,10 @@ def collect_followup_stats() -> dict[str, object]:
         '$[*] ? (@.message_kind == "rejection_notice" && @.delivery_status == "smtp_accepted")',
         JSONPATH,
     )
+    followup_reply_sent_path = cast(
+        '$[*] ? (@.message_kind == "followup_reply" && @.delivery_status == "smtp_accepted")',
+        JSONPATH,
+    )
     latest_kind = CampaignResponseProfile.messages_json[-1]["message_kind"].as_string()
     with session_scope() as session:
         statuses = {
@@ -236,8 +240,38 @@ def collect_followup_stats() -> dict[str, object]:
                     0,
                 ).label("reply_messages"),
                 func.count()
+                .filter(
+                    func.jsonb_path_exists(
+                        CampaignResponseProfile.messages_json,
+                        followup_reply_sent_path,
+                    )
+                )
+                .label("followup_reply_threads"),
+                func.coalesce(
+                    func.sum(
+                        func.jsonb_array_length(
+                            func.jsonb_path_query_array(
+                                CampaignResponseProfile.messages_json,
+                                followup_reply_sent_path,
+                            )
+                        )
+                    ),
+                    0,
+                ).label("followup_reply_messages"),
+                func.count()
                 .filter(CampaignResponseProfile.status == "need_reply")
                 .label("pending"),
+                func.count()
+                .filter(
+                    or_(
+                        CampaignResponseProfile.status == "need_reply",
+                        func.jsonb_path_exists(
+                            CampaignResponseProfile.messages_json,
+                            followup_reply_sent_path,
+                        ),
+                    )
+                )
+                .label("human_attention_threads"),
                 func.count()
                 .filter(
                     CampaignResponseProfile.status == "replied",
@@ -257,22 +291,42 @@ def collect_followup_stats() -> dict[str, object]:
     sent = int(totals["sent_rejections"])
     reply_threads = int(totals["reply_threads"])
     reply_messages = int(totals["reply_messages"])
+    followup_reply_threads = int(totals["followup_reply_threads"])
+    followup_reply_messages = int(totals["followup_reply_messages"])
     pending = int(totals["pending"])
+    human_attention_threads = int(totals["human_attention_threads"])
     resolved = int(totals["resolved_without_reply"])
     handled = int(totals["handled_with_followup"])
+    no_reply = max(sent - reply_threads, 0)
     return {
         "scope": f"Andy rejection follow-ups only ({andy})",
         "rejection_profiles_total": profiles,
         "status_counts": statuses,
         "rejections_smtp_accepted": sent,
+        "rejection_delivery_rate_pct": _percentage(sent, profiles),
         "rejections_not_smtp_accepted": max(profiles - sent, 0),
+        "creator_reply_threads_total_cumulative": reply_threads,
+        "creator_reply_messages_total_cumulative": reply_messages,
+        "followup_reply_threads_total_cumulative": followup_reply_threads,
+        "followup_reply_messages_total_cumulative": followup_reply_messages,
+        "current_need_reply_queue": pending,
+        "human_attention_threads_total": human_attention_threads,
+        "human_attention_rate_among_responders_pct": _percentage(
+            human_attention_threads, reply_threads
+        ),
+        "current_handled_or_resolved_threads": resolved + handled,
         "creators_replied_to_rejection": reply_threads,
         "rejection_reply_rate_pct": _percentage(reply_threads, sent),
+        "creators_without_rejection_reply": no_reply,
+        "no_reply_rate_pct": _percentage(no_reply, sent),
         "creator_reply_messages": reply_messages,
         "repeat_reply_messages": max(reply_messages - reply_threads, 0),
         "resolved_without_further_reply": resolved,
         "resolved_rate_among_responders_pct": _percentage(resolved, reply_threads),
         "handled_with_followup_reply": handled,
+        "followup_handled_thread_rate_among_responders_pct": _percentage(
+            followup_reply_threads, reply_threads
+        ),
         "genuine_threads_need_reply": pending,
         "need_reply_rate_among_responders_pct": _percentage(pending, reply_threads),
     }

@@ -21,6 +21,7 @@ from .core.config import get_settings
 from .console_ui import (
     console,
     print_campaign_summary,
+    print_followup_stats,
     print_replies,
     print_result,
     print_send_result,
@@ -939,7 +940,7 @@ def review_followup_replies_command(
 @followup_app.command("stats")
 def followup_stats_command() -> None:
     """Show Andy rejection statistics separately from cooperation campaigns."""
-    print_result(collect_followup_stats(), title="Andy rejection statistics")
+    print_followup_stats(collect_followup_stats())
 
 
 @data_app.command("init")

@@ -410,6 +410,17 @@ uv run creator-mail followup stats
 它只统计 Andy：已发拒信、回复人数、回复率、重复回复、无需再回、已人工回复和
 仍为 `need_reply` 的线程。
 
+其中要区分两个口径：
+
+- `creator_reply_threads_total_cumulative`：历史上曾回复过拒信的达人线程总数，处理后不会减少；
+- `creator_reply_messages_total_cumulative`：历史收到的拒信回信邮件总数，包含同一达人多轮回复；
+- `followup_reply_threads_total_cumulative`：历史上我们至少回复过一次的达人线程总数；
+- `followup_reply_messages_total_cumulative`：我们成功发出的拒信后续回复邮件总数，同一达人多轮沟通会逐封累加；
+- `current_need_reply_queue`：当前真正还要处理的线程数。回复成功后减 1，达人再次回信后加 1。
+
+例如当前有 54 条待回复，处理 20 条后是 34；随后新增 8 条回信，下一次统计是
+`34 + 8 = 42`，而不是把已经处理的 20 条重新算回待办。
+
 ### 10.3 逐封 AI 审核和回复
 
 ```powershell

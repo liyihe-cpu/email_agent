@@ -120,6 +120,102 @@ def print_stats(result: dict[str, object]) -> None:
     console.print(sender_table)
 
 
+def print_followup_stats(result: dict[str, object]) -> None:
+    """Show a concise Andy-only rejection report without persisting analytics."""
+    delivery = Table(title="Andy 拒信发送与回复", header_style="bold cyan")
+    delivery.add_column("指标")
+    delivery.add_column("数量", justify="right")
+    delivery.add_column("比例", justify="right")
+    delivery.add_row("进入拒信流程的达人", str(result["rejection_profiles_total"]), "—")
+    delivery.add_row(
+        "拒信 SMTP 已接受",
+        str(result["rejections_smtp_accepted"]),
+        _format_pct(result["rejection_delivery_rate_pct"]),
+    )
+    delivery.add_row(
+        "拒信尚未成功发出",
+        str(result["rejections_not_smtp_accepted"]),
+        "—",
+    )
+    delivery.add_section()
+    delivery.add_row(
+        "回复过拒信的达人（去重）",
+        str(result["creators_replied_to_rejection"]),
+        _format_pct(result["rejection_reply_rate_pct"]),
+    )
+    delivery.add_row(
+        "尚未回复拒信的达人",
+        str(result["creators_without_rejection_reply"]),
+        _format_pct(result["no_reply_rate_pct"]),
+    )
+    delivery.add_row(
+        "收到达人回信（累计封数）",
+        str(result["creator_reply_messages_total_cumulative"]),
+        "—",
+    )
+    delivery.add_row(
+        "其中：同一达人追加回信",
+        str(result["repeat_reply_messages"]),
+        "—",
+    )
+    console.print(delivery)
+
+    handling = Table(title="Andy 拒信后续处理", header_style="bold yellow")
+    handling.add_column("指标")
+    handling.add_column("数量", justify="right")
+    handling.add_column("占拒信回复达人", justify="right")
+    handling.add_row(
+        "累计进入真人处理范围（去重）",
+        str(result["human_attention_threads_total"]),
+        _format_pct(result["human_attention_rate_among_responders_pct"]),
+    )
+    handling.add_row(
+        "当前需要人工处理",
+        str(result["current_need_reply_queue"]),
+        _format_pct(result["need_reply_rate_among_responders_pct"]),
+    )
+    handling.add_row(
+        "AI/人工判断无需再回复",
+        str(result["resolved_without_further_reply"]),
+        _format_pct(result["resolved_rate_among_responders_pct"]),
+    )
+    handling.add_row(
+        "我方至少追加回复过一次（去重）",
+        str(result["followup_reply_threads_total_cumulative"]),
+        _format_pct(result["followup_handled_thread_rate_among_responders_pct"]),
+    )
+    handling.add_row(
+        "我方追加回复（累计封数）",
+        str(result["followup_reply_messages_total_cumulative"]),
+        "—",
+    )
+    handling.add_row(
+        "当前已回复、等待达人",
+        str(result["handled_with_followup_reply"]),
+        "—",
+    )
+    console.print(handling)
+
+    statuses = result.get("status_counts") or {}
+    status_table = Table(title="Andy 当前线程状态", header_style="bold magenta")
+    status_table.add_column("状态")
+    status_table.add_column("含义")
+    status_table.add_column("数量", justify="right")
+    meanings = {
+        "draft": "拒信草稿待发或可安全重试",
+        "need_reply": "收到新回信，等待处理",
+        "replied": "当前无需我方动作",
+        "review": "投递结果不确定，需核对",
+        "closed": "永久失败、退订或线程关闭",
+    }
+    for status in ("draft", "need_reply", "replied", "review", "closed"):
+        status_table.add_row(status, meanings[status], str(statuses.get(status, 0)))
+    for status, count in sorted(statuses.items()):
+        if status not in meanings:
+            status_table.add_row(str(status), "其他状态", str(count))
+    console.print(status_table)
+
+
 def _print_engagement_summary(
     summary: dict[str, object],
     *,
