@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from collections.abc import Iterator
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import Session, sessionmaker
 
 from .config import get_settings
@@ -19,18 +19,26 @@ def get_engine() -> Engine:
     global _engine
     if _engine is None:
         settings = get_settings()
+        database_url = make_url(settings.target_database_url)
+        if settings.target_database_name:
+            database_url = database_url.set(database=settings.target_database_name)
         _engine = create_engine(
-            settings.target_database_url,
+            database_url,
             pool_pre_ping=True,
             pool_recycle=300,
-            pool_size=5,
-            max_overflow=5,
+            # Batch commands can be launched in parallel. Keep each process to
+            # a small, bounded connection footprint so they cannot exhaust the
+            # shared PostgreSQL instance.
+            pool_size=settings.db_pool_size,
+            max_overflow=settings.db_max_overflow,
+            pool_timeout=settings.db_pool_timeout_seconds,
             connect_args={
                 "application_name": "creator-mail-platform",
                 "keepalives": 1,
                 "keepalives_idle": 30,
                 "keepalives_interval": 10,
                 "keepalives_count": 3,
+                "connect_timeout": settings.db_connect_timeout_seconds,
             },
         )
     return _engine

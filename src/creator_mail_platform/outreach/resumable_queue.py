@@ -40,12 +40,44 @@ def build_s1_queue_jobs(
     if not accounts:
         raise RuntimeError("No enabled cooperationXX@coojoy.cn SMTP account is configured")
 
+    # A resumable queue must preserve the sender selected when a batch was
+    # first prepared.  Starting a later range changes the round-robin offset;
+    # blindly recalculating it would otherwise attempt to reassign a prepared
+    # batch to another mailbox and abort the whole wave.
+    batch_numbers = list(range(batch_from, batch_to + 1))
+    with session_scope() as session:
+        rows = session.execute(
+            select(ActivityContact.batch_no, func.lower(ActivityContact.sender_email))
+            .where(
+                ActivityContact.batch_no.in_(batch_numbers),
+                ActivityContact.sender_email.is_not(None),
+            )
+            .distinct()
+        ).all()
+
+    existing_senders: dict[int, str] = {}
+    for batch_no, sender_email in rows:
+        batch = int(batch_no)
+        sender = str(sender_email)
+        previous = existing_senders.setdefault(batch, sender)
+        if previous != sender:
+            raise RuntimeError(
+                f"Batch {batch} has conflicting sender assignments: {previous}, {sender}"
+            )
+        if sender not in accounts:
+            raise RuntimeError(
+                f"Batch {batch} is assigned to disabled SMTP account {sender}"
+            )
+
     jobs = [
         CampaignJob(
             batch_no=batch_no,
-            sender_email=accounts[(batch_no - batch_from) % len(accounts)],
+            sender_email=existing_senders.get(
+                batch_no,
+                accounts[(batch_no - batch_from) % len(accounts)],
+            ),
         )
-        for batch_no in range(batch_from, batch_to + 1)
+        for batch_no in batch_numbers
     ]
     return jobs, accounts
 

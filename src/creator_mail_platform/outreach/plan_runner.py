@@ -5,10 +5,11 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Callable
 
-from sqlalchemy import func, select, text
+from sqlalchemy import create_engine, func, select, text
+from sqlalchemy.pool import NullPool
 
 from ..core.config import get_settings
-from ..core.db import get_engine, session_scope
+from ..core.db import session_scope
 from ..core.models import ActivityContact
 from ..core.utils import extract_send_address, normalize_email_key
 from .campaign import get_strategy_route, prepare_campaign, send_prepared_campaign
@@ -94,7 +95,18 @@ def run_campaign_plan(
             "Real sending is disabled. Set SMTP_EXECUTION_ENABLED=true before using --execute."
         )
 
-    with get_engine().connect().execution_options(
+    # Keep the long-lived advisory lock outside the shared QueuePool.  Sending
+    # workers each need a pooled session while the plan is active; with a
+    # small pool the lock used to consume the only available connection.
+    lock_engine = create_engine(
+        get_settings().target_database_url,
+        poolclass=NullPool,
+        connect_args={
+            "application_name": "creator-mail-plan-lock",
+            "connect_timeout": get_settings().db_connect_timeout_seconds,
+        },
+    )
+    with lock_engine.connect().execution_options(
         isolation_level="AUTOCOMMIT"
     ) as lock_connection:
         acquired = bool(
@@ -120,6 +132,7 @@ def run_campaign_plan(
                 text("SELECT pg_advisory_unlock(hashtext(:name))"),
                 {"name": PLAN_LOCK_NAME},
             )
+            lock_engine.dispose()
 
 
 def _run_locked_plan(

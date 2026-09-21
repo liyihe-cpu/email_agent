@@ -18,6 +18,17 @@ class Settings(BaseSettings):
     )
 
     target_database_url: str
+    # Shares the endpoint credentials in TARGET_DATABASE_URL while selecting
+    # another database on the same PostgreSQL server.
+    target_database_name: str | None = None
+    # A plan can send through up to 10 accounts concurrently, with several
+    # workers per account.  Leave room for those sessions and the receiver.
+    db_pool_size: int = Field(default=12, ge=1, le=20)
+    db_max_overflow: int = Field(default=12, ge=0, le=20)
+    db_pool_timeout_seconds: int = Field(default=60, ge=1, le=300)
+    # TCP connection establishment is separate from QueuePool checkout.  Keep
+    # it bounded so an unreachable database fails promptly with a useful error.
+    db_connect_timeout_seconds: int = Field(default=10, ge=1, le=120)
     milvus_uri: str = "http://127.0.0.1:19530"
     milvus_collection: str = "creator_profiles"
 

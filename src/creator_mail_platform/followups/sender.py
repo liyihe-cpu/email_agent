@@ -26,7 +26,7 @@ from ..outreach.sender import (
     _validate_execution_guard,
     get_smtp_account,
 )
-from .generator import is_rejection_eligible
+from .generator import _initial_reply_sort_key, is_rejection_eligible
 
 
 RETRYABLE_DELIVERY_STATUSES = {"draft", "temporary_failed"}
@@ -51,6 +51,7 @@ def send_rejections(
     execute: bool = False,
     parallel_accounts: int = 10,
     sender_email: str | None = None,
+    newest_first: bool = False,
 ) -> dict[str, object]:
     """Preview or send rejection drafts as brand-new email threads."""
     if parallel_accounts < 1 or parallel_accounts > 10:
@@ -81,6 +82,8 @@ def send_rejections(
         is not None
         and bool((draft.get("metadata") or {}).get("generated_by"))
     ]
+    if newest_first:
+        ready.sort(key=lambda item: _initial_reply_sort_key(item[0]), reverse=True)
     if limit is not None:
         ready = ready[:limit]
     sender_override = normalize_email_key(sender_email) if sender_email else None

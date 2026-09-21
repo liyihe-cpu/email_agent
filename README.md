@@ -1,3 +1,14 @@
+# 预览 10 封
+
+uv run creator-mail followup send-rejections `  --sender andy@coojoy.cn`
+  --limit 10
+
+# 正式发送已生成的 1500 封
+
+uv run creator-mail followup send-rejections `  --sender andy@coojoy.cn`
+  --limit 1500 `
+  --execute
+
 # Creator Mail Platform
 
 COOJOY 达人建联、Creator Pass、回信分析、拒信和后续多轮沟通工具。
@@ -126,11 +137,11 @@ uv run creator-mail data sync `
 
 ## 4. 三种建联策略
 
-| 策略 | Batch | 内容 |
-|---|---:|---|
-| S1 | 1-25，以及 76 以后 | 项目 Brief 邀约，需要回信 |
-| S2 | 26-50 | Creator Pass 专属链接 |
-| S3 | 51-75 | 项目 Brief + Creator Pass 链接 |
+| 策略 |              Batch | 内容                           |
+| ---- | -----------------: | ------------------------------ |
+| S1   | 1-25，以及 76 以后 | 项目 Brief 邀约，需要回信      |
+| S2   |              26-50 | Creator Pass 专属链接          |
+| S3   |              51-75 | 项目 Brief + Creator Pass 链接 |
 
 策略由运行命令指定，数据库不重复保存 `strategy_no`；统计时根据 `batch_no`
 推导。Batch 76 以后当前统一按 S1 运行。
@@ -407,8 +418,8 @@ uv run creator-mail receive --mailbox andy@coojoy.cn --forever
 uv run creator-mail followup stats
 ```
 
-它只统计 Andy：已发拒信、回复人数、回复率、重复回复、无需再回、已人工回复和
-仍为 `need_reply` 的线程。
+它只统计 Andy：累计已发拒信、按上海时间统计的当日已发拒信、回复人数、回复率、
+重复回复、无需再回、已人工回复和仍为 `need_reply` 的线程。
 
 其中要区分两个口径：
 
@@ -485,81 +496,81 @@ Terminal B 按顺序运行：
 
 身份与画像：
 
-| 字段 | 含义 |
-|---|---|
-| `creator_id` | 主键；目前通常是 `platform:handle` |
-| `email` | 标准化收件邮箱 |
-| `batch_no` | 稳定分配的 600 人 Batch |
-| `platform` / `handle` | 平台和达人 handle |
-| `follower_count` | 从 Milvus 同步的粉丝数 |
-| `country` / `language` | 国家和主要语言 |
-| `primary_category` | 主类目 |
-| `profile_bio` / `analysis_note` | 原始画像和分析摘要 |
-| `source_data_version` | 最近一次同步版本 |
+| 字段                                | 含义                                |
+| ----------------------------------- | ----------------------------------- |
+| `creator_id`                      | 主键；目前通常是`platform:handle` |
+| `email`                           | 标准化收件邮箱                      |
+| `batch_no`                        | 稳定分配的 600 人 Batch             |
+| `platform` / `handle`           | 平台和达人 handle                   |
+| `follower_count`                  | 从 Milvus 同步的粉丝数              |
+| `country` / `language`          | 国家和主要语言                      |
+| `primary_category`                | 主类目                              |
+| `profile_bio` / `analysis_note` | 原始画像和分析摘要                  |
+| `source_data_version`             | 最近一次同步版本                    |
 
 建联发送：
 
-| 字段 | 含义 |
-|---|---|
-| `sender_email` | 实际分配的 cooperation 发件箱 |
-| `send_status` / `email_status` | SMTP 流程状态与邮箱可用性 |
-| `status_reason` / `smtp_code` | 具体原因和最近明确 SMTP 状态码 |
-| `retry_count` / `sent_at` | 重试次数与 SMTP 接受时间 |
-| `brief_code` | 主要推荐项目编码 |
-| `offered_brief_codes` | 实际提供过的全部项目编码 JSON 数组 |
-| `sent_subject` / `sent_body_text` | 实际标题与可审计纯文本正文 |
-| `outbound_message_id` | 初次建联 Message-ID |
+| 字段                                  | 含义                               |
+| ------------------------------------- | ---------------------------------- |
+| `sender_email`                      | 实际分配的 cooperation 发件箱      |
+| `send_status` / `email_status`    | SMTP 流程状态与邮箱可用性          |
+| `status_reason` / `smtp_code`     | 具体原因和最近明确 SMTP 状态码     |
+| `retry_count` / `sent_at`         | 重试次数与 SMTP 接受时间           |
+| `brief_code`                        | 主要推荐项目编码                   |
+| `offered_brief_codes`               | 实际提供过的全部项目编码 JSON 数组 |
+| `sent_subject` / `sent_body_text` | 实际标题与可审计纯文本正文         |
+| `outbound_message_id`               | 初次建联 Message-ID                |
 
 Creator Pass 与回信：
 
-| 字段 | 含义 |
-|---|---|
-| `form_submitted_at` | 加入或最近保存表单的时间 |
-| `form_response_json` | 类目、联系方式、授权及奖励拆分 |
-| `reward_status` | 奖励生命周期 |
-| `reply_type` / `reply_count` | 最新邮件分类与累计有效邮件数 |
-| `last_reply_at` | 最新有效邮件时间 |
-| `reply_subject` / `reply_body_text` | 最新有效邮件标题与正文 |
+| 字段                                    | 含义                           |
+| --------------------------------------- | ------------------------------ |
+| `form_submitted_at`                   | 加入或最近保存表单的时间       |
+| `form_response_json`                  | 类目、联系方式、授权及奖励拆分 |
+| `reward_status`                       | 奖励生命周期                   |
+| `reply_type` / `reply_count`        | 最新邮件分类与累计有效邮件数   |
+| `last_reply_at`                       | 最新有效邮件时间               |
+| `reply_subject` / `reply_body_text` | 最新有效邮件标题与正文         |
 
 `activity_contacts` 只保留最新有效回信正文；冻结到后续档案的首次回信不会被
 Andy 多轮回复覆盖。
 
 ### 12.2 `send_status`
 
-| 值 | 含义 | 自动重试 |
-|---|---|---|
-| `pending` | 尚未发送 | 是 |
-| `on_hold` | 暂不发送；目前用于印度达人 | 否，解除暂缓后再恢复为 pending |
-| `sending` | 已领取发送任务，或结果待确认 | 否，先看原因 |
-| `smtp_accepted` | SMTP 服务端已接受 | 否 |
-| `temporary_failed` | 4xx 或明确临时失败 | 是 |
-| `hard_failed` | 5xx 或明确永久失败 | 否 |
+| 值                   | 含义                         | 自动重试                       |
+| -------------------- | ---------------------------- | ------------------------------ |
+| `pending`          | 尚未发送                     | 是                             |
+| `on_hold`          | 暂不发送；目前用于印度达人   | 否，解除暂缓后再恢复为 pending |
+| `sending`          | 已领取发送任务，或结果待确认 | 否，先看原因                   |
+| `smtp_accepted`    | SMTP 服务端已接受            | 否                             |
+| `temporary_failed` | 4xx 或明确临时失败           | 是                             |
+| `hard_failed`      | 5xx 或明确永久失败           | 否                             |
 
 ### 12.3 `email_status`
 
-| 值 | 含义 |
-|---|---|
-| `unknown` | 尚无真实投递/回复证据；通过预检查后也可能仍是 unknown |
-| `possibly_usable` | SMTP 已接受，但尚无回信证据 |
-| `usable` | 收到真人回复或自动回复，证明邮箱可收信 |
-| `invalid` | 格式、路由、永久拒绝或硬退信明确无效 |
-| `suppressed` | 对方退订，禁止继续营销触达 |
+| 值                  | 含义                                                  |
+| ------------------- | ----------------------------------------------------- |
+| `unknown`         | 尚无真实投递/回复证据；通过预检查后也可能仍是 unknown |
+| `possibly_usable` | SMTP 已接受，但尚无回信证据                           |
+| `usable`          | 收到真人回复或自动回复，证明邮箱可收信                |
+| `invalid`         | 格式、路由、永久拒绝或硬退信明确无效                  |
+| `suppressed`      | 对方退订，禁止继续营销触达                            |
 
 `usable` 不等于真人回复。真人和自动回复都会证明邮箱可用；真人回复必须筛选
 `reply_type = 'human_reply'`，所以 usable 数量和真人回复数不同是正常的。
 
 ### 12.4 常见 `status_reason`
 
-| 值 | 含义 |
-|---|---|
-| `syntax_passed` / `mail_route_passed` | 格式通过 / 邮件路由通过 |
-| `invalid_format` / `invalid_domain` | 格式或域名明确无效 |
-| `smtp_in_progress` | SMTP 正在处理 |
-| `smtp_result_unknown` | 连接中断，结果不确定，禁止自动重发 |
-| `smtp_temporary_error` | SMTP 临时失败 |
-| `mailbox_not_found` / `smtp_rejected` | SMTP 永久拒绝 |
-| `hard_bounce` / `soft_bounce` | 硬退信 / 软退信 |
-| `unsubscribed` | 对方退订 |
+| 值                                        | 含义                               |
+| ----------------------------------------- | ---------------------------------- |
+| `syntax_passed` / `mail_route_passed` | 格式通过 / 邮件路由通过            |
+| `invalid_format` / `invalid_domain`   | 格式或域名明确无效                 |
+| `smtp_in_progress`                      | SMTP 正在处理                      |
+| `smtp_result_unknown`                   | 连接中断，结果不确定，禁止自动重发 |
+| `smtp_temporary_error`                  | SMTP 临时失败                      |
+| `mailbox_not_found` / `smtp_rejected` | SMTP 永久拒绝                      |
+| `hard_bounce` / `soft_bounce`         | 硬退信 / 软退信                    |
+| `unsubscribed`                          | 对方退订                           |
 
 ### 12.5 `reply_type`
 
@@ -590,29 +601,29 @@ reward_breakdown_usd, reward_total_usd, reward_condition
 
 ### 12.7 `campaign_response_profiles`
 
-| 字段 | 含义 |
-|---|---|
-| `creator_id` | 主键，与 `activity_contacts` 对应 |
-| `batch_no` | 原建联 Batch |
-| `mailbox_email` / `recipient_email` | 后续公司邮箱与达人邮箱 |
-| `messages_json` | 按时间保存完整后续收发上下文 |
-| `analysis_json` | 精简的达人画像与首次回复分析 |
-| `status` | 当前线程状态 |
-| `last_message_at` | 最近邮件或事件时间 |
-| `created_at` / `updated_at` | 创建和更新时间 |
+| 字段                                    | 含义                               |
+| --------------------------------------- | ---------------------------------- |
+| `creator_id`                          | 主键，与`activity_contacts` 对应 |
+| `batch_no`                            | 原建联 Batch                       |
+| `mailbox_email` / `recipient_email` | 后续公司邮箱与达人邮箱             |
+| `messages_json`                       | 按时间保存完整后续收发上下文       |
+| `analysis_json`                       | 精简的达人画像与首次回复分析       |
+| `status`                              | 当前线程状态                       |
+| `last_message_at`                     | 最近邮件或事件时间                 |
+| `created_at` / `updated_at`         | 创建和更新时间                     |
 
 `analysis_json` 当前只应包含 `creator_profile` 和 `initial_response`，不要写入每日
 AI 审核缓存。
 
 后续线程 `status`：
 
-| 值 | 含义 |
-|---|---|
-| `draft` | 拒信草稿待发，或临时失败待续跑 |
-| `replied` | 当前无需我方动作：已回复等待对方，或确认无需再回 |
-| `need_reply` | Andy 收到真实后续回信，需要处理 |
-| `review` | 投递结果不确定，需人工核对 |
-| `closed` | 永久失败、退订、硬退信或线程关闭 |
+| 值             | 含义                                             |
+| -------------- | ------------------------------------------------ |
+| `draft`      | 拒信草稿待发，或临时失败待续跑                   |
+| `replied`    | 当前无需我方动作：已回复等待对方，或确认无需再回 |
+| `need_reply` | Andy 收到真实后续回信，需要处理                  |
+| `review`     | 投递结果不确定，需人工核对                       |
+| `closed`     | 永久失败、退订、硬退信或线程关闭                 |
 
 ### 12.8 `messages_json`
 
@@ -639,11 +650,11 @@ occurred_at, delivery_status, semantic_intent, metadata
 
 ### 12.9 `mailbox_checkpoints`
 
-| 字段 | 含义 |
-|---|---|
-| `mailbox_email` | 公司收件邮箱主键 |
-| `uidvalidity` | IMAP UID 世代 |
-| `last_uid` | 已成功处理到的最后一封 UID |
+| 字段              | 含义                       |
+| ----------------- | -------------------------- |
+| `mailbox_email` | 公司收件邮箱主键           |
+| `uidvalidity`   | IMAP UID 世代              |
+| `last_uid`      | 已成功处理到的最后一封 UID |
 
 它只是收信游标，不是邮件历史表。
 
@@ -705,3 +716,107 @@ uv run creator-mail followup stats
 
 排查时先看数据库状态和 Terminal 输出，不要因为终端暂时没动就启动第二个真实
 发送进程。遇到 `smtp_result_unknown`，先人工核对发件箱再决定后续处理。
+
+## 15. 生成每 30 个 Batch 的真人回复对比表
+
+本章用于生成一张按 30 个 Batch 分组的汇总表。横向字段为：
+
+| Batch 组 | 已发送 | 真人回复 | 真人回复率 | 回复过拒信的达人（去重） | 其比例 | 累计进入真人处理范围（去重） | 其比例 |
+| -------- | -----: | -------: | ---------: | -----------------------: | -----: | ---------------------------: | -----: |
+
+纵向使用 `1–30`、`31–60`、`61–90` 这样的分组，最后增加一行 `总`。
+
+### 15.1 指标口径
+
+- `已发送`：`activity_contacts.send_status = 'smtp_accepted'` 的去重达人数量。
+- `真人回复`：已发送达人中 `reply_type = 'human_reply'` 的去重达人数量。
+- `真人回复率`：`真人回复 / 已发送`。
+- `回复过拒信的达人（去重）`：`campaign_response_profiles.messages_json` 中至少有一条 `message_kind = 'creator_reply'` 的达人，按其原始 `batch_no` 归组。
+- `回复过拒信的达人比例`：该组回复过拒信的去重达人 / 该组已发送去重达人。
+- `累计进入真人处理范围（去重）`：截至该组末尾，所有已发送且有真人回复的去重达人累计数；跨 Batch 只计一次。
+- `累计进入真人处理范围比例`：累计进入真人处理范围 / 截至该组末尾的累计已发送去重达人。
+- `总` 行的比例用总数相除，不对各组百分比做简单平均。
+
+### 15.2 一行命令直接在终端输出
+
+先同步回信，然后执行：
+
+```powershell
+uv run creator-mail receive; uv run creator-mail batch30-report --last-batch 466
+```
+
+如果只需要重新查看统计表，不重复收信：
+
+```powershell
+uv run creator-mail batch30-report --last-batch 466
+```
+
+命令会直接打印每 30 个 Batch 一行，并在最后打印 `总` 行。将 `466` 换成当前最后一个 Batch 即可。
+
+### 15.3 用 SQL 生成分组明细
+
+先同步回信：
+
+```powershell
+uv run creator-mail receive
+```
+
+然后在 PostgreSQL 客户端执行下面的查询。把 `466` 改成当前需要统计的最后一个 Batch。查询结果可直接复制到 Excel，再补充累计列和总行。
+
+```sql
+WITH sent AS (
+  SELECT DISTINCT ON (creator_id)
+         creator_id, batch_no, reply_type
+  FROM creator_mail.activity_contacts
+  WHERE send_status = 'smtp_accepted'
+    AND batch_no BETWEEN 1 AND 466
+  ORDER BY creator_id, sent_at DESC NULLS LAST
+),
+rejection_reply AS (
+  SELECT DISTINCT p.creator_id
+  FROM creator_mail.campaign_response_profiles p
+  CROSS JOIN LATERAL jsonb_array_elements(
+    COALESCE(p.messages_json, '[]'::jsonb)
+  ) AS m
+  WHERE m->>'message_kind' = 'creator_reply'
+),
+groups AS (
+  SELECT start_batch, LEAST(start_batch + 29, 466) AS end_batch
+  FROM generate_series(1, 466, 30) AS start_batch
+)
+SELECT
+  CONCAT(g.start_batch, '–', g.end_batch) AS batch_group,
+  COUNT(DISTINCT s.creator_id) AS sent,
+  COUNT(DISTINCT s.creator_id) FILTER (
+    WHERE s.reply_type = 'human_reply'
+  ) AS human_reply,
+  ROUND(
+    100.0 * COUNT(DISTINCT s.creator_id) FILTER (
+      WHERE s.reply_type = 'human_reply'
+    ) / NULLIF(COUNT(DISTINCT s.creator_id), 0), 2
+  ) AS human_reply_rate_pct,
+  COUNT(DISTINCT s.creator_id) FILTER (
+    WHERE rr.creator_id IS NOT NULL
+  ) AS rejection_reply_unique,
+  ROUND(
+    100.0 * COUNT(DISTINCT s.creator_id) FILTER (
+      WHERE rr.creator_id IS NOT NULL
+    ) / NULLIF(COUNT(DISTINCT s.creator_id), 0), 2
+  ) AS rejection_reply_rate_pct
+FROM groups g
+LEFT JOIN sent s ON s.batch_no BETWEEN g.start_batch AND g.end_batch
+LEFT JOIN rejection_reply rr ON rr.creator_id = s.creator_id
+GROUP BY g.start_batch, g.end_batch
+ORDER BY g.start_batch;
+```
+
+### 15.3 补充累计列和总行
+
+在 Excel 中按 Batch 组从上到下累计：
+
+```text
+累计进入真人处理范围（去重） = 截至当前组末尾，reply_type = human_reply 的 creator_id 去重数
+累计进入真人处理范围比例 = 累计进入真人处理范围（去重） / 截至当前组末尾累计已发送去重数
+```
+
+最后一行填写 `总`，已发送、真人回复和回复过拒信达人均使用全区间去重总数；所有比例重新用总数计算。新 Batch 的回复有滞后，显示为 0 时应先再次执行 `receive`，再判断是否真的没有回复。

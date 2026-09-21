@@ -24,16 +24,10 @@ class OfferCopy:
     closing: str
 
 
-REPLY_EXAMPLE = "Example: MIC-01 / US$1,500 / Available next month"
-
-
 ENGLISH_OFFER_COPY = OfferCopy(
     greeting="Hi {handle},",
     courtesy="I hope you're doing well.",
-    team_intro=(
-        "We're the Creator Partnerships team at COOJOY. We connect creators "
-        "worldwide with paid campaigns from international brands."
-    ),
+    team_intro="We're the Creator Partnerships team at COOJOY.",
     matched_intro=(
         "Based on your content, one paid opportunity stood out as a particularly "
         "good match. We've also included a flexible creator-camera campaign you "
@@ -51,10 +45,7 @@ ENGLISH_OFFER_COPY = OfferCopy(
     compensation_label="Compensation",
     timeline_label="Timeline",
     usage_rights_label="Usage rights",
-    reply_cta=(
-        "If any opportunity interests you, simply reply with the project code, "
-        "your rate, and your availability."
-    ),
+    reply_cta="Interested? Just reply \"Yes\" and we'll send the full brief.",
     creator_pass_note=(
         "P.S. Complete your personalized Creator Pass to improve future campaign "
         "matching and unlock up to US$30 in additional benefits with your first "
@@ -90,10 +81,10 @@ ENGLISH_FALLBACK_INTROS = (
 )
 
 ENGLISH_REPLY_CTAS = (
-    "Interested in any of these? Reply with the project code, your rate, and your availability.",
-    "If one catches your eye, send us the project code, your rate, and when you're available.",
-    "To discuss any opportunity, just reply with its project code, your rate, and your availability.",
-    "Feel free to reply with the project code you prefer, your rate, and your available timing.",
+    "Interested? Just reply \"Yes\" and we'll send the full brief.",
+    "Want the full brief? Reply \"Yes\" and we'll send it over.",
+    "If you'd like the details, simply reply \"Yes\".",
+    "Interested in learning more? A quick \"Yes\" reply is all we need.",
 )
 
 ENGLISH_CLOSINGS = (
@@ -119,10 +110,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "es": OfferCopy(
         greeting="Hola {handle},",
         courtesy="Espero que estés muy bien.",
-        team_intro=(
-            "Somos el equipo de Creator Partnerships de COOJOY. Conectamos a "
-            "creadores de todo el mundo con campañas pagadas de marcas internacionales."
-        ),
+        team_intro="Somos el equipo de Creator Partnerships de COOJOY.",
         matched_intro=(
             "Por tu contenido, encontramos una oportunidad pagada que creemos que "
             "encaja especialmente bien contigo. También añadimos una campaña flexible "
@@ -140,10 +128,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="Compensación",
         timeline_label="Plazo",
         usage_rights_label="Derechos de uso",
-        reply_cta=(
-            "Si alguna oportunidad te interesa, responde con el código del proyecto, "
-            "tu tarifa y tu disponibilidad."
-        ),
+        reply_cta="¿Te interesa? Responde simplemente «Sí» y te enviaremos el brief completo.",
         creator_pass_note=(
             "P. D. Completa tu Creator Pass personalizado para recibir campañas mejor "
             "adaptadas y desbloquear hasta US$30 en beneficios adicionales con el primer "
@@ -154,10 +139,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "pt": OfferCopy(
         greeting="Olá {handle},",
         courtesy="Tudo bem?",
-        team_intro=(
-            "Somos o time de Creator Partnerships da COOJOY. Conectamos criadores do "
-            "mundo todo a campanhas pagas de marcas internacionais."
-        ),
+        team_intro="Somos o time de Creator Partnerships da COOJOY.",
         matched_intro=(
             "Pelo seu conteúdo, encontramos uma oportunidade paga que parece combinar "
             "especialmente bem com você. Também incluímos uma campanha flexível de "
@@ -175,10 +157,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="Cachê",
         timeline_label="Prazo",
         usage_rights_label="Direitos de uso",
-        reply_cta=(
-            "Se alguma oportunidade interessar, responda com o código do projeto, "
-            "seu cachê e sua disponibilidade."
-        ),
+        reply_cta="Tem interesse? Basta responder «Sim» e enviaremos o briefing completo.",
         creator_pass_note=(
             "P.S. Complete seu Creator Pass personalizado para receber campanhas mais "
             "alinhadas e desbloquear até US$30 em benefícios adicionais no primeiro "
@@ -189,11 +168,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "fr": OfferCopy(
         greeting="Bonjour {handle},",
         courtesy="J'espère que vous allez bien.",
-        team_intro=(
-            "Nous sommes l'équipe Creator Partnerships de COOJOY. Nous mettons en "
-            "relation des créateurs du monde entier avec des campagnes rémunérées de "
-            "marques internationales."
-        ),
+        team_intro="Nous sommes l'équipe Creator Partnerships de COOJOY.",
         matched_intro=(
             "Au vu de votre contenu, une opportunité rémunérée nous a semblé "
             "particulièrement adaptée. Nous avons aussi ajouté une campagne flexible "
@@ -211,10 +186,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="Rémunération",
         timeline_label="Délai",
         usage_rights_label="Droits d'utilisation",
-        reply_cta=(
-            "Si une opportunité vous intéresse, répondez simplement avec le code du "
-            "projet, votre tarif et vos disponibilités."
-        ),
+        reply_cta="Intéressé(e) ? Répondez simplement « Oui » et nous vous enverrons le brief complet.",
         creator_pass_note=(
             "P.-S. Complétez votre Creator Pass personnalisé pour recevoir des campagnes "
             "plus adaptées et débloquer jusqu'à US$30 d'avantages supplémentaires lors "
@@ -225,10 +197,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "de": OfferCopy(
         greeting="Hallo {handle},",
         courtesy="Ich hoffe, dir geht es gut.",
-        team_intro=(
-            "Wir sind das Creator-Partnerships-Team von COOJOY und bringen Creator "
-            "weltweit mit bezahlten Kampagnen internationaler Marken zusammen."
-        ),
+        team_intro="Wir sind das Creator-Partnerships-Team von COOJOY.",
         matched_intro=(
             "Auf Basis deines Contents ist uns eine bezahlte Kooperation aufgefallen, "
             "die besonders gut zu dir passen könnte. Zusätzlich haben wir eine flexible "
@@ -246,10 +215,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="Vergütung",
         timeline_label="Zeitrahmen",
         usage_rights_label="Nutzungsrechte",
-        reply_cta=(
-            "Wenn dich ein Projekt interessiert, antworte einfach mit Projektcode, "
-            "Honorarvorstellung und Verfügbarkeit."
-        ),
+        reply_cta="Interessiert? Antworte einfach mit „Ja“, dann senden wir dir das vollständige Briefing.",
         creator_pass_note=(
             "P.S. Fülle deinen persönlichen Creator Pass aus, um passendere Kampagnen "
             "zu erhalten und bis zu US$30 an zusätzlichen Vorteilen bei deiner ersten "
@@ -260,10 +226,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "ko": OfferCopy(
         greeting="안녕하세요 {handle}님,",
         courtesy="잘 지내고 계신가요?",
-        team_intro=(
-            "저희는 COOJOY Creator Partnerships 팀입니다. 전 세계 크리에이터와 "
-            "글로벌 브랜드의 유료 캠페인을 연결하고 있어요."
-        ),
+        team_intro="저희는 COOJOY Creator Partnerships 팀입니다.",
         matched_intro=(
             "콘텐츠를 바탕으로 특히 잘 맞을 것 같은 유료 프로젝트 한 가지를 "
             "선정했습니다. 다양한 콘텐츠 스타일에 활용할 수 있는 크리에이터용 "
@@ -281,10 +244,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="보상",
         timeline_label="일정",
         usage_rights_label="사용 권한",
-        reply_cta=(
-            "관심 있는 프로젝트가 있다면 프로젝트 코드, 희망 단가, 가능한 일정을 "
-            "답장으로 보내 주세요."
-        ),
+        reply_cta="관심 있으시면 “네”라고 답장해 주세요. 전체 브리프를 보내드릴게요.",
         creator_pass_note=(
             "추신: 맞춤형 Creator Pass를 작성하면 앞으로 더 잘 맞는 캠페인을 받고, "
             "첫 COOJOY 적격 캠페인 정산에서 최대 US$30의 추가 혜택을 받을 수 있어요:\n{url}"
@@ -294,10 +254,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "ja": OfferCopy(
         greeting="{handle}さん、こんにちは。",
         courtesy="お元気ですか？",
-        team_intro=(
-            "私たちはCOOJOYのCreator Partnershipsチームです。世界中のクリエイターと"
-            "海外ブランドの有償キャンペーンをつないでいます。"
-        ),
+        team_intro="私たちはCOOJOYのCreator Partnershipsチームです。",
         matched_intro=(
             "コンテンツを拝見し、特に相性がよさそうな有償案件を1件選びました。"
             "あわせて、幅広いスタイルで取り組みやすいクリエイター向けカメラ案件も"
@@ -315,10 +272,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="報酬",
         timeline_label="スケジュール",
         usage_rights_label="使用権",
-        reply_cta=(
-            "気になる案件があれば、プロジェクトコード、希望報酬、対応可能な時期を"
-            "そのままご返信ください。"
-        ),
+        reply_cta="ご興味があれば「はい」とだけ返信してください。詳細なブリーフをお送りします。",
         creator_pass_note=(
             "追伸：あなた専用のCreator Passを入力すると、今後より相性のよい案件を"
             "受け取り、最初の対象COOJOYキャンペーン報酬で最大US$30の追加特典を"
@@ -329,10 +283,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "ru": OfferCopy(
         greeting="Здравствуйте, {handle}!",
         courtesy="Надеемся, у вас всё хорошо.",
-        team_intro=(
-            "Мы — команда Creator Partnerships в COOJOY. Мы помогаем авторам со "
-            "всего мира находить платные кампании международных брендов."
-        ),
+        team_intro="Мы — команда Creator Partnerships в COOJOY.",
         matched_intro=(
             "Судя по вашему контенту, одна платная кампания особенно хорошо вам "
             "подходит. Мы также добавили гибкий проект с камерой для авторов, который "
@@ -350,10 +301,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="Оплата",
         timeline_label="Сроки",
         usage_rights_label="Права использования",
-        reply_cta=(
-            "Если вас заинтересовал какой-либо проект, ответьте, указав код проекта, "
-            "вашу ставку и доступные даты."
-        ),
+        reply_cta="Заинтересованы? Просто ответьте «Да», и мы отправим полный бриф.",
         creator_pass_note=(
             "P.S. Заполните персональный Creator Pass, чтобы получать более подходящие "
             "кампании и разблокировать до US$30 дополнительных преимуществ при первой "
@@ -364,10 +312,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
     "ar": OfferCopy(
         greeting="مرحبًا {handle}،",
         courtesy="نتمنى أن تكون بخير.",
-        team_intro=(
-            "نحن فريق شراكات صنّاع المحتوى في COOJOY، ونساعد المبدعين حول العالم على "
-            "الوصول إلى حملات مدفوعة مع علامات تجارية دولية."
-        ),
+        team_intro="نحن فريق شراكات صنّاع المحتوى في COOJOY.",
         matched_intro=(
             "بناءً على محتواك، وجدنا فرصة مدفوعة نعتقد أنها مناسبة لك بشكل خاص. وأضفنا "
             "أيضًا حملة مرنة لكاميرا مخصصة لصنّاع المحتوى قد تهمك."
@@ -384,9 +329,7 @@ OFFER_LOCALIZED_COPIES: dict[str, OfferCopy] = {
         compensation_label="المقابل",
         timeline_label="الجدول الزمني",
         usage_rights_label="حقوق الاستخدام",
-        reply_cta=(
-            "إذا أعجبتك أي فرصة، ما عليك سوى الرد برمز المشروع وسعرك والوقت المتاح لديك."
-        ),
+        reply_cta="مهتم؟ ما عليك سوى الرد بكلمة «نعم» وسنرسل لك الملخص الكامل.",
         creator_pass_note=(
             "ملاحظة: أكمل Creator Pass المخصص لك للحصول على حملات أنسب والاستفادة من "
             "مزايا إضافية تصل إلى US$30 مع أول دفعة مؤهلة من حملة COOJOY:\n{url}"

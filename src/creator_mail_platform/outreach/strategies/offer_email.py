@@ -8,7 +8,6 @@ from .briefs import CampaignBrief
 from .localization import resolve_language_code
 from .offer_copy import (
     OFFER_LOCALIZED_COPIES,
-    REPLY_EXAMPLE,
     OfferCopy,
     select_english_offer_copy,
 )
@@ -103,7 +102,6 @@ def render_offer_email(
         personalized_opening=english_opening,
         offer=offer,
         creator_pass_url=creator_pass_url,
-        include_reply_example=True,
     )
     if language_code == "en":
         return subject, english, language_code
@@ -115,7 +113,6 @@ def render_offer_email(
         personalized_opening=primary_opening or english_opening,
         offer=offer,
         creator_pass_url=creator_pass_url,
-        include_reply_example=True,
     )
     return (
         subject,
@@ -140,7 +137,6 @@ def _render_offer_section(
     personalized_opening: str,
     offer: ProjectOffer,
     creator_pass_url: str | None,
-    include_reply_example: bool,
 ) -> str:
     intro = copy.matched_intro if offer.primary is not None else copy.fallback_intro
     featured_heading = (
@@ -149,8 +145,7 @@ def _render_offer_section(
     sections = [
         copy.greeting.format(handle=handle),
         copy.courtesy,
-        copy.team_intro,
-        personalized_opening.strip(),
+        f"{copy.team_intro} {personalized_opening.strip()}",
         intro,
         featured_heading,
         "\n\n".join(
@@ -165,8 +160,6 @@ def _render_offer_section(
             ]
         )
     sections.append(copy.reply_cta)
-    if include_reply_example:
-        sections.append(REPLY_EXAMPLE)
     if creator_pass_url:
         sections.append(copy.creator_pass_note.format(url=creator_pass_url))
     sections.append(copy.closing)

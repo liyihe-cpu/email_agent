@@ -40,21 +40,38 @@ class SiliconFlowClient:
             if enable_thinking is not None
             else None
         )
-        response = self.client.chat.completions.create(
-            model=(model or self.settings.llm_model).strip(),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-            response_format={"type": "json_object"},
-            extra_body=extra_body,
-        )
-        content = response.choices[0].message.content
-        if not content:
-            raise RuntimeError("SiliconFlow returned an empty response")
-        payload = json.loads(content)
-        if not isinstance(payload, dict):
-            raise RuntimeError("SiliconFlow response must be a JSON object")
-        return payload
+        # Some OpenAI-compatible providers occasionally return malformed JSON
+        # despite response_format=json_object. Retry a fresh completion so one
+        # bad model response does not abort an interactive review session.
+        last_decode_error: json.JSONDecodeError | None = None
+        for attempt in range(3):
+            response = self.client.chat.completions.create(
+                model=(model or self.settings.llm_model).strip(),
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=temperature,
+                max_tokens=max_tokens,
+                response_format={"type": "json_object"},
+                extra_body=extra_body,
+            )
+            content = response.choices[0].message.content
+            if not content:
+                raise RuntimeError("SiliconFlow returned an empty response")
+            try:
+                payload = json.loads(content)
+            except json.JSONDecodeError as exc:
+                last_decode_error = exc
+                if attempt < 2:
+                    continue
+                break
+            if not isinstance(payload, dict):
+                raise RuntimeError("SiliconFlow response must be a JSON object")
+            return payload
+
+        assert last_decode_error is not None
+        raise RuntimeError(
+            "SiliconFlow returned invalid JSON after 3 attempts: "
+            f"{last_decode_error}"
+        ) from last_decode_error

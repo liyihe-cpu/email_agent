@@ -38,11 +38,13 @@ Use this scoring scale consistently:
 - 0.65-0.84: clear relevant match with enough profile evidence
 - 0.35-0.64: adjacent or plausible, but not strong enough to feature
 - 0.00-0.34: weak, unsupported, or unrelated
-Write one natural personalized opening sentence in the requested creator language and the same idea in English.
+Write one natural, personalized opening sentence in the requested creator language and the same idea in English.
+Use this structure when the source supports a video or content topic: "We watched your [specific topic] videos and really appreciate [a specific visible quality]."
 Mention the creator's real content niche or specialty and one visible quality such as style, clarity, creativity, presentation, or polish.
 Do not invent metrics, audience reactions, relationships, brand results, income, or personal facts.
 Never claim that the content inspires, resonates with, helps, or is loved by an audience unless the profile explicitly proves it.
-Keep each opening concise, ideally 10-22 English-equivalent words.
+Do not claim to have watched a specific video, episode, or post unless the supplied profile identifies that topic; when only a broader niche is available, say "We came across your [topic] content" instead.
+Make the opening a little more substantial: normally 18-32 English-equivalent words.
 The opening must be a genuine compliment only. Do not mention a Brief, product, campaign, collaboration fit, or how a product could improve the creator's content.
 Do not write the full email, project terms, greeting, URL, or signature.
 
@@ -51,7 +53,7 @@ Return JSON only:
   "candidate_scores": [
     {"brief_code": "one supplied brief_code", "match_score": 0.0}
   ],
-  "primary_opening": "one concise sentence in the requested creator language",
+  "primary_opening": "one 18-32-word personalized sentence in the requested creator language",
   "english_opening": "the same idea in natural English"
 }"""
 

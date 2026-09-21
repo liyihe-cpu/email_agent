@@ -133,6 +133,11 @@ def print_followup_stats(result: dict[str, object]) -> None:
         _format_pct(result["rejection_delivery_rate_pct"]),
     )
     delivery.add_row(
+        f"当日已发拒信（{result['rejections_smtp_accepted_today_date']} · 上海时间）",
+        str(result["rejections_smtp_accepted_today"]),
+        "—",
+    )
+    delivery.add_row(
         "拒信尚未成功发出",
         str(result["rejections_not_smtp_accepted"]),
         "—",

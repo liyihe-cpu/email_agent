@@ -115,13 +115,19 @@ def generate_rejection_drafts(
     offset: int = 0,
     workers: int = 3,
     apply: bool = False,
+    newest_first: bool = False,
 ) -> dict[str, object]:
     """Generate personalized S1/S3 rejection drafts; never sends email."""
     settings = get_settings()
     model = settings.followup_llm_model.strip()
     if not model:
         raise RuntimeError("FOLLOWUP_LLM_MODEL is not configured")
-    candidates = _load_candidates(limit, offset=offset, skip_generated=apply)
+    candidates = _load_candidates(
+        limit,
+        offset=offset,
+        skip_generated=apply,
+        newest_first=newest_first,
+    )
     if not candidates:
         return {
             "model": model,
@@ -178,6 +184,7 @@ def _load_candidates(
     *,
     offset: int = 0,
     skip_generated: bool = False,
+    newest_first: bool = False,
 ) -> list[CampaignResponseProfile]:
     with session_scope() as session:
         profiles = list(
@@ -193,7 +200,7 @@ def _load_candidates(
         if is_rejection_eligible(profile)
         and (not skip_generated or _generated_rejection_draft(profile) is None)
     ]
-    eligible.sort(key=_initial_reply_sort_key)
+    eligible.sort(key=_initial_reply_sort_key, reverse=newest_first)
     return eligible[offset : offset + limit]
 
 

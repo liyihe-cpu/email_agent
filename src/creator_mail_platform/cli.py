@@ -9,6 +9,7 @@ from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 from rich.prompt import Confirm, Prompt
 import typer
+from sqlalchemy.exc import OperationalError
 
 from .outreach.campaign import (
     generate_strategy_messages,
@@ -53,6 +54,7 @@ from .outreach.stats import collect_stats
 from .outreach.validator import validate_pending_contacts
 from .replies.imap_receiver import listen_forever, receive_once
 from .replies.report import list_replies
+from .batch30_report import print_batch30_report
 
 
 app = typer.Typer(
@@ -69,6 +71,14 @@ followup_app = typer.Typer(help="拒信、独立邮件线程与后续多轮沟�
 app.add_typer(data_app, name="data")
 app.add_typer(form_app, name="form")
 app.add_typer(followup_app, name="followup")
+
+
+@app.command("batch30-report")
+def batch30_report(
+    last_batch: Annotated[int, typer.Option("--last-batch", help="统计到哪个 Batch。")]=466,
+) -> None:
+    """在终端输出每 30 个 Batch 的真人回复汇总表。"""
+    print_batch30_report(last_batch)
 
 
 @app.command("run-campaign")
@@ -571,6 +581,10 @@ def send_rejections_command(
         int,
         typer.Option("--parallel-accounts", min=1, max=10),
     ] = 10,
+    newest_first: Annotated[
+        bool,
+        typer.Option("--newest-first", help="按达人首次积极回复时间从晚到早发送。"),
+    ] = False,
     execute: Annotated[
         bool,
         typer.Option("--execute", help="真实发送；不添加时仅预览前10封。"),
@@ -582,6 +596,7 @@ def send_rejections_command(
         execute=execute,
         parallel_accounts=parallel_accounts,
         sender_email=sender,
+        newest_first=newest_first,
     )
     previews = list(result.pop("previews", []))
     print_result(result, title="拒信发送结果")
@@ -607,6 +622,10 @@ def generate_rejections_command(
         typer.Option("--offset", min=0, help="预览时跳过前 N 位合格达人。"),
     ] = 0,
     workers: Annotated[int, typer.Option("--workers", "-w", min=1, max=8)] = 3,
+    newest_first: Annotated[
+        bool,
+        typer.Option("--newest-first", help="按达人首次积极回复时间从晚到早生成。"),
+    ] = False,
     apply: Annotated[
         bool,
         typer.Option("--apply", help="将生成结果写入未发送的拒信草稿；不添加时只预览。"),
@@ -619,6 +638,7 @@ def generate_rejections_command(
             offset=offset,
             workers=workers,
             apply=apply,
+            newest_first=newest_first,
         )
     previews = list(result.pop("previews", []))
     failures = list(result.pop("failures", []))
@@ -795,8 +815,17 @@ def list_followup_messages_command(
 def review_followup_replies_command(
     limit: Annotated[int, typer.Option("--limit", "-n", min=1, max=1000)] = 20,
     execute: Annotated[bool, typer.Option("--execute")] = False,
+    auto_approve: Annotated[
+        bool,
+        typer.Option(
+            "--auto-approve",
+            help="Display every AI suggestion, then send it without prompting. Requires --execute.",
+        ),
+    ] = False,
 ) -> None:
     """Analyze and review Andy replies in memory, one by one."""
+    if auto_approve and not execute:
+        raise ValueError("--auto-approve requires --execute")
     rows = pending_review_threads(limit=limit)
     if not rows:
         console.print("[green]No genuine Andy threads currently need a reply.[/green]")
@@ -847,11 +876,15 @@ def review_followup_replies_command(
                 "状态已更新为 replied，无需回复。[/green]"
             )
             continue
-        action = Prompt.ask(
-            "Decision",
-            choices=["approve", "revise", "no_reply", "escalate", "skip", "quit"],
-            default="skip",
-        )
+        if auto_approve:
+            action = "approve"
+            console.print("[yellow]Auto-approve enabled: sending this displayed reply.[/yellow]")
+        else:
+            action = Prompt.ask(
+                "Decision",
+                choices=["approve", "revise", "no_reply", "escalate", "skip", "quit"],
+                default="skip",
+            )
         if action == "quit":
             break
         if action == "approve" and not str(review.get("suggested_reply") or "").strip():
@@ -1012,6 +1045,19 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     try:
         app()
+    except OperationalError as exc:
+        message = str(exc).lower()
+        if "connection timeout" in message or "timeout expired" in message:
+            console.print(
+                Panel.fit(
+                    "PostgreSQL 连接超时：请确认 TARGET_DATABASE_URL 的主机和端口可达，"
+                    "并检查数据库服务、防火墙、安全组及 VPN/内网连接。",
+                    title="数据库不可达",
+                    border_style="red",
+                )
+            )
+            raise SystemExit(1) from exc
+        raise
     except (ValueError, RuntimeError) as exc:
         console.print(Panel.fit(str(exc), title="无法继续", border_style="red"))
         raise SystemExit(1) from exc

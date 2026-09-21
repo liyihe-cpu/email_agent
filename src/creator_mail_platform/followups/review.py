@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from datetime import datetime
 import json
 from typing import Any
+from zoneinfo import ZoneInfo
 
-from sqlalchemy import cast, func, or_, select
+from sqlalchemy import Date, DateTime, cast, func, or_, select, true
 from sqlalchemy.dialects.postgresql import JSONPATH
 
 from ..core.config import get_settings
@@ -15,6 +17,7 @@ from ..outreach.strategies.base_client import SiliconFlowClient
 
 
 FOLLOWUP_OUTBOUND_KINDS = {"rejection_notice", "followup_reply"}
+REPORT_TIMEZONE = ZoneInfo("Asia/Shanghai")
 
 REVIEW_PROMPT = """You assist a human COOJOY partnerships manager with replies received after a rejection/update email.
 
@@ -35,6 +38,9 @@ Read the complete chronological conversation. Focus on the creator's latest unqu
 
 Rules:
 - Never claim a campaign, payment, selection, deadline, or guaranteed opportunity unless it already appears in COOJOY's messages.
+- Use a notably humble, respectful, and non-defensive posture. Acknowledge any inconvenience or disappointment plainly when appropriate; never argue, pressure the creator, or sound self-congratulatory.
+- Do not say that COOJOY will contact the creator immediately, soon, or at any specific time. Do not imply that any opportunity from the current campaign round remains available: all current-round campaigns have no remaining creator slots. If future contact is relevant, say only that COOJOY will reach out when the next suitable campaign round becomes available; do not promise a placement or a date.
+- Do not ask the creator any question or use a question mark. Do not ask them to choose opportunities, confirm availability, send details, or take any action unless the human reviewer explicitly instructs otherwise.
 - If the creator only acknowledges the update, expresses thanks or future interest, and asks nothing, choose no_reply.
 - Questions about campaign terms, payment, contracts, personal data, complaints, or a creator who still appears commercially valuable should be surfaced clearly.
 - Preserve the existing email language. Keep suggested replies concise and human, normally 2-5 sentences.
@@ -56,6 +62,9 @@ Rules:
 - Treat the human instruction as the controlling editing direction. It may be written in Chinese or English.
 - Write the final email in the creator's language unless the human explicitly requests another language.
 - Preserve accurate details from the conversation. Never invent selection, payment, campaign, deadline, or guarantee claims.
+- Keep a humble, respectful, and non-defensive posture. Where appropriate, acknowledge inconvenience or disappointment plainly; do not argue, pressure, or sound self-congratulatory.
+- Never say that COOJOY will contact the creator immediately, soon, or on a specific date. Do not imply that any opportunity from the current campaign round remains available: all current-round campaigns have no remaining creator slots. If future contact is relevant, say only that COOJOY will reach out when the next suitable campaign round becomes available, without promising a placement.
+- Do not ask the creator any question or use a question mark. Do not ask them to choose opportunities, confirm availability, send details, or take any action unless the human instruction explicitly requires it.
 - Keep the reply warm, concise, and natural. Do not quote the earlier email thread.
 - Return a complete ready-to-send reply, not editing notes or an explanation.
 - reply_zh is for internal review only and must accurately mirror reply.
@@ -74,7 +83,7 @@ def pending_review_threads(*, limit: int | None = None) -> list[dict[str, object
                     func.lower(CampaignResponseProfile.mailbox_email) == andy,
                 )
                 .order_by(
-                    CampaignResponseProfile.last_message_at,
+                    CampaignResponseProfile.last_message_at.desc().nullslast(),
                     CampaignResponseProfile.creator_id,
                 )
             )
@@ -203,6 +212,13 @@ def collect_followup_stats() -> dict[str, object]:
         JSONPATH,
     )
     latest_kind = CampaignResponseProfile.messages_json[-1]["message_kind"].as_string()
+    report_date = datetime.now(REPORT_TIMEZONE).date()
+    message = func.jsonb_array_elements(
+        CampaignResponseProfile.messages_json
+    ).table_valued("value").alias("message")
+    occurred_at = cast(
+        message.c.value.op("->>")("occurred_at"), DateTime(timezone=True)
+    )
     with session_scope() as session:
         statuses = {
             str(status): int(count)
@@ -286,6 +302,23 @@ def collect_followup_stats() -> dict[str, object]:
                 .label("handled_with_followup"),
             ).where(mailbox_filter)
         ).one()._mapping
+        sent_today = int(
+            session.scalar(
+                select(func.count())
+                .select_from(CampaignResponseProfile)
+                .join(message, true())
+                .where(
+                    mailbox_filter,
+                    message.c.value.op("->>")("message_kind")
+                    == "rejection_notice",
+                    message.c.value.op("->>")("delivery_status")
+                    == "smtp_accepted",
+                    cast(func.timezone("Asia/Shanghai", occurred_at), Date)
+                    == report_date,
+                )
+            )
+            or 0
+        )
 
     profiles = int(totals["profiles"])
     sent = int(totals["sent_rejections"])
@@ -303,6 +336,8 @@ def collect_followup_stats() -> dict[str, object]:
         "rejection_profiles_total": profiles,
         "status_counts": statuses,
         "rejections_smtp_accepted": sent,
+        "rejections_smtp_accepted_today": sent_today,
+        "rejections_smtp_accepted_today_date": report_date.isoformat(),
         "rejection_delivery_rate_pct": _percentage(sent, profiles),
         "rejections_not_smtp_accepted": max(profiles - sent, 0),
         "creator_reply_threads_total_cumulative": reply_threads,
